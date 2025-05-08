@@ -5,41 +5,49 @@ Scissor = 2
 
 - Input is case insensitive
 */
+
+let computer, human;
+let humanScore = 0;
+let roundNumber = 0;
+
 function getComputerChoice() {
     let randomOpponent = Math.floor(Math.random() * 3);
     return randomOpponent;
 }
 
-function getHumanChoice(){
-    let choice = prompt("Please choose: Rock, Paper or Scissor", "");
-    choice = choice.toLowerCase()
-    if (choice === "rock") return 0;
-    if (choice === "paper") return 1;
-    if (choice === "scissor") return 2;
-}
-
+// Convert number of choice into text
 function recallChoice(num1){
     if (num1 === 0) return "Rock";
     if (num1 === 1) return "Paper";
     if (num1 === 2) return "Scissor";
 }
 
+// Convert choice into number
+function getChoiceValue(choice){
+    const c = choice.toLowerCase();
+    if(c === "rock") return 0;
+    if(c === "paper") return 1;
+    if(c === "scissor") return 2;
+}
+
 function beatsOver(choice1, choice2){
     return recallChoice(choice1) + " beats " + recallChoice(choice2) + "."
 }
 
-function humanWin(win_str, humanChoice, computerChoice){
-    console.log(win_str + beatsOver(humanChoice, computerChoice));
-    return 1;
-}
+function resultMessage(message, humanChoice, computerChoice){
 
-function humanLoss(loss_str, humanChoice, computerChoice){
-    console.log(loss_str + beatsOver(computerChoice, humanChoice));
-    return -1;
-}
+    const startMessage = "Round #" + roundNumber + ": ";
 
-let computer, human;
-let computerScore = 0, humanScore = 0;
+    const resultContainer = document.querySelector("#currentRound");
+    const turnResult = document.createElement("p");
+
+    if (humanChoice === computerChoice) {
+        turnResult.textContent = startMessage + message + recallChoice(humanChoice);
+    } else {
+        turnResult.textContent = startMessage + message + beatsOver(computerChoice, humanChoice);
+    }
+    resultContainer.prepend(turnResult);
+}
 
 function playRound(computerChoice, humanChoice) {
     /* 
@@ -51,45 +59,60 @@ function playRound(computerChoice, humanChoice) {
 
     // DRAW: Same for both. Draw!
     if (computerChoice == humanChoice) {
-        console.log("It's a draw! Both played " + recallChoice(humanChoice));
+        resultMessage(draw, humanChoice, computerChoice);
         return 0;
     }
     // WIN: Computer inputs rock, player paper.
     if ((computerChoice == 0 ) && (humanChoice) == 1) {
-        return humanWin(loss, humanChoice, computerChoice);
+        resultMessage(win, humanChoice, computerChoice);
+        return 1;
     }
     // LOSS: Computer inputs rock, player scissors
     if ((computerChoice == 0 ) && (humanChoice) == 2) {
-        return humanLoss(loss, humanChoice, computerChoice);
+        resultMessage(loss, humanChoice, computerChoice);
+        return -1;
     }
     // LOSS: Computer inputs paper, player rock
     if ((computerChoice == 1 ) && (humanChoice) == 0){
-        return humanLoss(loss, humanChoice, computerChoice);
+        resultMessage(loss, humanChoice, computerChoice);
+        return -1;
     }
     // WIN: Computer inputs paper, player scissors
     if ((computerChoice == 1) && (humanChoice == 2)){
-        return humanWin(win, humanChoice, computerChoice);
+        resultMessage(win, humanChoice, computerChoice);
+        return 1;
     }
     // WIN: Computer inputs scissor, player rock
     if ((computerChoice == 2) && (humanChoice == 0)){
-        return humanWin(win, humanChoice, computerChoice);
+        resultMessage(win, humanChoice, computerChoice);
+        return 1;
     }
     if ((computerChoice == 2) && (humanChoice == 1)){
-        return humanLoss(loss, humanChoice, computerChoice)
+        resultMessage(loss, humanChoice, computerChoice);
+        return -1;
     }
     else return null;
 }
 
-//playRound(computer, human);
+// New contents for the game
+const results = document.querySelector("#totalScore");
+const resultText = document.createElement("p");
 
-for(let i = 0; i <= 5; i++){
-    // human = Math.floor(Math.random() * 3);
-    human = getHumanChoice();
-    a = getComputerChoice();
-    // console.log("New Game");
-    // console.log(a)
-    // console.log(human)
-    humanScore += playRound(a, human);
-}
+const gameButtons = document.querySelectorAll(".rps-choice");
 
-console.log("My score: " + humanScore);
+gameButtons.forEach((button) => {
+    button.addEventListener('click', function(e) {
+        if (humanScore < 5 && humanScore > -5){
+            let choice = getChoiceValue(button.textContent);
+            humanScore += playRound(getComputerChoice(), choice);
+            if (humanScore < 5 && humanScore > -5){
+                resultText.textContent = "A pontuação atual é de: " + parseInt(humanScore);
+                roundNumber++;
+            } else {
+                resultText.textContent = "<b>Game over</b>! A pontuação final é de: " + parseInt(humanScore);
+            }
+        }
+    })
+})
+
+results.appendChild(resultText);

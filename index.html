@@ -5,10 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rock-Paper-Scissors Game</title>
+    <script src="./js/rps-game.js" defer></script>
 </head>
 <body>
-    <script src="./js/rps-game.js"></script>
+    
     <h1>Rock-Paper-Scissors game</h1>
-    <p>Meant to be played on console.</p>
+    <div class="container">
+        <button class="rps-choice">Rock</button>
+        <button class="rps-choice">Paper</button>
+        <button class="rps-choice">Scissor</button>
+    </div>
+    <div id="results">
+        <span id="totalScore"></span>
+        <span id="currentRound"></span>
+    </div>
 </body>
 </html>
